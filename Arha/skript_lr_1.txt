@@ -1,0 +1,81 @@
+#!/bin/bash
+
+echo "===== Операционная система ====="
+os_name=$(lsb_release -d | awk -F"\t" '{print $2}')
+echo "$os_name"
+
+echo "===== Версия и архитектура ядра ====="
+kernel_version=$(uname -r)
+echo "Версия ядра: $kernel_version"
+
+kernel_architecture=$(uname -m)
+echo "Архитектура ядра: $kernel_architecture"
+
+echo
+
+echo "===== Информация о процессоре ====="
+cpu_model_name=$(grep "model name" /proc/cpuinfo | uniq | awk -F": " '{print $2}')
+echo "Модель процессора: $cpu_model_name"
+
+cpu_frequency=$(grep "cpu MHz" /proc/cpuinfo | uniq | awk -F": " '{print $2}')
+echo "Частота процессора (МГц): $cpu_frequency"
+
+cpu_cores=$(grep -c "^processor" /proc/cpuinfo)
+echo "Количество ядер: $cpu_cores"
+
+cpu_cache=$(grep "cache size" /proc/cpuinfo | uniq | awk -F": " '{print $2}')
+
+echo "Размер кэш-памяти: $cpu_cache"
+
+echo
+
+echo "===== Информация о памяти ====="
+total_mem=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+total_mem_mb=$((total_mem / 1024))
+echo "Общий размер памяти: $total_mem_mb MB"
+
+free_mem=$(grep MemFree /proc/meminfo | awk '{print $2}')
+free_mem_mb=$((free_mem / 1024))
+echo "Свободная память: $free_mem_mb MB"
+
+available_mem=$(grep MemAvailable /proc/meminfo | awk '{print $2}')
+available_mem_mb=$((available_mem / 1024))
+echo "Доступная память: $available_mem_mb MB"
+
+used_mem=$((total_mem - available_mem))
+used_mem_mb=$((used_mem / 1024))
+echo "Использованная память: $used_mem_mb MB"
+
+echo
+
+
+for iface in $(ls /sys/class/net/); do
+        echo "===== Интерфейс: $iface ====="
+
+	mac_address=$(cat /sys/class/net/$iface/address)
+        echo "MAC-адрес: $mac_address"
+
+        ip_address=$(ip addr show $iface | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+        if [ -z "$ip_address" ]; then
+                ip_address="Нет IP-адреса"
+        fi
+        echo "IP-адрес: $ip_address"
+
+
+        if [ -d /sys/class/net/$iface/wireless ]; then
+                echo "Тип соединения: Беспроводное (Wi-Fi)"
+        else
+                speed=$(ethtool $iface 2>/dev/null | grep "Speed:" | awk '{print $2}')
+                if [ -z "$speed" ]; then
+                speed="Не определена"
+                fi
+                echo "Скорость соединения: $speed"
+        fi
+
+        echo ""
+done
+
+echo
+
+echo "=== Информация о системном разделе ==="
+df -h --output=source,fstype,size,used,avail,pcent,target | grep '^/dev/'
