@@ -1,0 +1,56 @@
+(format t ~a~% Задание №1)
+
+(defun get-atom (lst)
+
+        Извлечение атома  из сложного списка
+        (cadr (cdaadr lst))
+)
+
+(format t ~a~% (get-atom '(1 (((2 3) (4 5) ) (6)))))
+
+
+
+(format t ~%~a~% Задание №2)
+
+(format t ~a~% (list '(a b) 7 '(())))
+
+
+
+(format t ~%~a Задание №3)
+
+(format t ~%~a a) - )
+(format t ~a (cons 1 (cons (cons 2 nil) (cons 3 nil))))
+
+(format t ~%~a b) - )
+(format t ~a~% (list 1 (list 2) 3))
+(format t ~%~a Задание №4)
+
+(defun swap-first-second-elements (lst)
+
+        (if (or (null lst) (null (cdr lst)))
+                lst
+
+                (cons (cadr lst)  (cons (car lst) (cddr lst))   )))
+
+(defun append-method (lst)
+    (if (or (null lst) (null (cdr lst)) )
+        lst
+        (append (list (cadr lst) (car lst)) (cddr lst) )
+    )
+)
+
+(format t ~%~a Результат с помощью 'cons' )
+(format t ~%~a~% (swap-first-second-elements '(1 2 3 4)))
+(format t ~a~% (swap-first-second-elements '(a b c)))
+(format t ~a~% (swap-first-second-elements '(x y)))
+(format t ~a~% (swap-first-second-elements '(onlyone)))
+(format t ~a~% (swap-first-second-elements '(1)))
+(format t ~a~% (swap-first-second-elements '()))
+
+(format t ~%~a Результат с помощью 'append' )
+(format t ~%~a~% (append-method '(1 2 3 4)))
+(format t ~a~% (append-method '(a b c)))
+(format t ~a~% (append-method '(x y)))
+(format t ~a~% (append-method '(onlyone)))
+(format t ~a~% (append-method '(1)))
+(format t ~a~% (append-method '()))
